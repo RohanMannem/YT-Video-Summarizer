@@ -23,8 +23,7 @@ Compare their outputs side-by-side and understand how different NLP libraries ha
 
 ```bash
 python summarizer.py --video_id dQw4w9WgXcQ
-
----
+```
 
 ## Example Output
 📜 spaCy Summary:
@@ -34,7 +33,6 @@ python summarizer.py --video_id dQw4w9WgXcQ
 📜 NLTK Summary:
 - Sentence 1...
 - Sentence 2...
-```
 
 ---
 
