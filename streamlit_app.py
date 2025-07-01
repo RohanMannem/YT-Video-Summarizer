@@ -1,5 +1,5 @@
 import streamlit as st
-from fetch_transcript import fetch_transcript_yt_dlp
+from fetch_transcript import proxy_fetch_transcript
 from basic_summarizer import spacy_summarizer
 from basic_summarizer import nltk_summarizer
 from openai_summarizer import openai_summarizer
@@ -27,7 +27,7 @@ gpt_style = st.selectbox("GPT Summary Style", ["Default", "Bullets", "Explain Li
 
 if st.button("Summarize") and video_id:
     with st.spinner("Fetching transcript..."):
-        transcript = fetch_transcript_yt_dlp(video_link)
+        transcript = proxy_fetch_transcript(video_id)
 
     if not transcript:
         st.error("❌ Could not fetch transcript. Check if the video has captions.")
