@@ -1,0 +1,52 @@
+# Re-run after code environment was reset to regenerate the Streamlit app file
+
+streamlit_code = """
+import streamlit as st
+from summarizer import get_transcript, summarize_with_nltk, summarize_with_spacy, summarize_with_gpt
+
+st.set_page_config(page_title="🎥 YouTube Video Summarizer", layout="centered")
+
+st.title("🎥 YouTube Video Summarizer")
+st.markdown("Fetch a YouTube video transcript and generate summaries using spaCy, NLTK, and GPT.")
+
+video_id = st.text_input("Enter YouTube Video ID:", help="Only the video ID, not the full URL")
+
+use_gpt = st.checkbox("Use GPT-4o Summary", value=False)
+gpt_style = st.selectbox("GPT Summary Style", ["Default", "Bullets", "Explain Like I'm 5", "Short Paragraph"]) if use_gpt else None
+
+if st.button("Summarize") and video_id:
+    with st.spinner("Fetching transcript..."):
+        transcript = get_transcript(video_id)
+
+    if not transcript:
+        st.error("❌ Could not fetch transcript. Check if the video has captions.")
+    else:
+        st.subheader("📜 Transcript Preview")
+        st.text(transcript[:1000] + "..." if len(transcript) > 1000 else transcript)
+
+        st.subheader("🧠 spaCy Summary")
+        spacy_summary = summarize_with_spacy(transcript)
+        st.markdown(spacy_summary)
+
+        st.subheader("🧪 NLTK Summary")
+        nltk_summary = summarize_with_nltk(transcript)
+        st.markdown(nltk_summary)
+
+        if use_gpt:
+            st.subheader("🤖 GPT-4o Summary")
+            prompt_styles = {
+                "Default": f"Summarize this YouTube transcript:\\n\\n{transcript}",
+                "Bullets": f"Summarize this transcript as 5–7 clear bullet points:\\n\\n{transcript}",
+                "Explain Like I'm 5": f"Explain this video simply, like I'm 5 years old:\\n\\n{transcript}",
+                "Short Paragraph": f"Summarize this transcript in 1 short paragraph:\\n\\n{transcript}",
+            }
+            gpt_summary = summarize_with_gpt(prompt_styles[gpt_style])
+            st.markdown(gpt_summary)
+"""
+
+# Save to file
+streamlit_file_path = "streamlit/app.py"
+with open(streamlit_file_path, "w") as f:
+    f.write(streamlit_code.strip())
+
+streamlit_file_path
