@@ -61,7 +61,7 @@ def proxy_fetch_transcript(video_id, max_retries=3):
 
     raise Exception("All proxy attempts failed to fetch the transcript.")
 
-def fetch_transcript_yt_dlp(video_id):
+def fetch_transcript_yt_dlp(video_url):
     import yt_dlp
     import pysrt
 
