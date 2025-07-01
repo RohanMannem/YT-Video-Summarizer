@@ -9,6 +9,7 @@ proxy_password = os.getenv("WEBSHARE_PROXY_PASSWORD")
 
 def fetch_transcript(video_id, streamlit=False):
     if streamlit:
+        print("HERE")
         ytt_api = YouTubeTranscriptApi(
             proxy_config=WebshareProxyConfig(
                 proxy_username=proxy_username,
