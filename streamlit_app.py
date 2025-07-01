@@ -32,8 +32,8 @@ if st.button("Summarize") and video_id:
     if not transcript:
         st.error("❌ Could not fetch transcript. Check if the video has captions.")
     else:
-        st.subheader("📜 Transcript Preview")
-        st.text(transcript[:1000] + "..." if len(transcript) > 1000 else transcript)
+        # st.subheader("📜 Transcript Preview")
+        # st.text(transcript[:1000] + "..." if len(transcript) > 1000 else transcript)
 
         st.subheader("🧠 spaCy Summary")
         spacy_summary = spacy_summarizer(transcript)
