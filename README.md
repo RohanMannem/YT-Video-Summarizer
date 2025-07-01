@@ -1,6 +1,6 @@
 # 🎥 YouTube Video Summarizer
 
-This Python-based tool takes a YouTube video ID, fetches the video transcript, and generates concise extractive summaries using two NLP approaches: one built with spaCy and the other with NLTK.
+This project summarizes YouTube videos by fetching their transcripts and generating concise summaries using both extractive NLP methods and LLMs. It's built with Streamlit and supports proxy-enabled transcript fetching, making it work even when YouTube blocks cloud apps.
 
 Compare their outputs side-by-side and understand how different NLP libraries handle text summarization.
 
@@ -9,11 +9,10 @@ Compare their outputs side-by-side and understand how different NLP libraries ha
 ## ✨ Features
 
 - ✅ Fetches transcripts using the `youtube-transcript-api`
-- ✅ Sentence tokenization and frequency-based extractive summarization using:
-  - NLTK
-  - spaCy (with Sentencizer)
-- ✅ Clean CLI interface
-- ✅ Modular and easy to extend (e.g., LLM-based summaries coming soon)
+- ✅ Sentence tokenization and frequency-based extractive summarization using NLTK and spaCy
+- ✅ GPT-based summaries
+- ✅ Streamlit UI for interactive usage
+- ✅ CLI usage supported
 
 ---
 
@@ -22,7 +21,7 @@ Compare their outputs side-by-side and understand how different NLP libraries ha
 ### 🔧 CLI Example
 
 ```bash
-python summarizer.py --video_id dQw4w9WgXcQ
+python main.py --video_link "<youtube_url>"
 ```
 
 ## Example Output
@@ -67,7 +66,7 @@ pip install -r requirements.txt
 ### Project Structure
 ```bash
 yt-summarizer/
-├── summarizer.py          # Main script for fetching and summarizing transcripts
+├── main.py                # Main script for fetching and summarizing transcripts
 ├── utils.py               # Helper functions (optional)
 ├── requirements.txt       # Project dependencies
 └── README.md              # You're reading this!
@@ -79,15 +78,14 @@ yt-summarizer/
 - Working with the YouTube Transcript API
 - Text preprocessing and tokenization with NLTK and spaCy
 - Frequency-based extractive summarization
-- Structuring a simple but extensible NLP project
-- Comparing multiple NLP modules to understand strengths and weaknesses
+- Streamlit deployment
+- Webshare proxy server configuration
+- Using OpenAI API packages
 
 ---
 
 ## 🔮 Future Improvements
 
-- [ ] Add GPT-based abstractive summarization using OpenAI or Anthropic APIs
-- [ ] Build a Streamlit or Gradio front-end for easy interaction
 - [ ] Incorporate vector search and Q&A (Retrieval-Augmented Generation style)
 - [ ] Integrate evaluation metrics (e.g., ROUGE, BLEU, human feedback)
 - [ ] Log summary usage and feedback for fine-tuning or improvement
