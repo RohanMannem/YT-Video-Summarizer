@@ -35,14 +35,6 @@ if st.button("Summarize") and video_id:
         # st.subheader("📜 Transcript Preview")
         # st.text(transcript[:1000] + "..." if len(transcript) > 1000 else transcript)
 
-        st.subheader("🧠 spaCy Summary")
-        spacy_summary = spacy_summarizer(transcript)
-        st.markdown(spacy_summary)
-
-        st.subheader("🧪 NLTK Summary")
-        nltk_summary = nltk_summarizer(transcript)
-        st.markdown(nltk_summary)
-
         if use_gpt:
             st.subheader("🤖 GPT-4o Summary")
             prompt_styles = {
@@ -53,3 +45,11 @@ if st.button("Summarize") and video_id:
             }
             gpt_summary = openai_summarizer(prompt_styles[gpt_style])
             st.markdown(gpt_summary)
+        else:
+            st.subheader("🧠 spaCy Summary")
+            spacy_summary = spacy_summarizer(transcript)
+            st.markdown(spacy_summary)
+
+            st.subheader("🧪 NLTK Summary")
+            nltk_summary = nltk_summarizer(transcript)
+            st.markdown(nltk_summary)

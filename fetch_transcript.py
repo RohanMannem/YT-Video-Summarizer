@@ -1,9 +1,6 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.proxies import WebshareProxyConfig
-import time
-from proxy_manager import get_random_proxy
 import streamlit as st
-import os
 
 def fetch_transcript(video_id):
     ytt_api = YouTubeTranscriptApi()
