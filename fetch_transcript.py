@@ -3,6 +3,7 @@ from youtube_transcript_api.proxies import WebshareProxyConfig
 import time
 from proxy_manager import get_random_proxy
 import streamlit as st
+import os
 
 def fetch_transcript(video_id):
     ytt_api = YouTubeTranscriptApi()
@@ -69,9 +70,10 @@ def fetch_transcript_yt_dlp(video_url):
         "skip_download": True,
         "writesubtitles": True,
         "writeautomaticsub": True,
-        "subtitleslangs": "en",
+        "subtitleslangs": ["en"],
         "subtitlesformat": "srt",
-        "outtmpl": "%(id)s.%(ext)s",
+        "convertsubtitles": "srt",
+        "outtmpl": "subtitles/%(id)s.%(ext)s",
     }
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
@@ -79,7 +81,9 @@ def fetch_transcript_yt_dlp(video_url):
         video_id = info["id"]
         srt_file = f"{video_id}.en.srt"
 
-    # Read subtitles using pysrt
+    if not os.path.exists(srt_file):
+        raise FileNotFoundError("❌ Subtitles not found. The video may not have captions in English.")
+
     subs = pysrt.open(srt_file)
     full_text = " ".join([sub.text for sub in subs])
     print(full_text)
