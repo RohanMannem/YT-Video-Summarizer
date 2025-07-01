@@ -27,12 +27,14 @@ python summarizer.py --video_id dQw4w9WgXcQ
 
 ## Example Output
 📜 spaCy Summary:
-- Sentence 1...
-- Sentence 2...
+```bash
+in this new era of deep, consistent rosters where chemistry and fit matter just as much as talent, the okc thunder have built the youngest, most continuous roster in the entire league while being the best team in the league. but to say they have simply entered this club would actually be an understatement because throughout the 2025 season, the thunder finished with the sixth best record of all time, the second highest net rating of all time, and the largest margin of victory in the history of the league. among the championship teams in this era of parody, the 2020 lakers have had the lowest payroll, winning a title with just the 11th most expensive team in the league.
+```
 
 📜 NLTK Summary:
-- Sentence 1...
-- Sentence 2...
+```bash
+But to say they have simply entered this club would actually be an understatement because throughout the 2025 season, the Thunder finished with the sixth best record of all time, the second highest net rating of all time, and the largest margin of victory in the history of the league. In this new era of deep, consistent rosters where chemistry and fit matter just as much as talent, the OKC Thunder have built the youngest, most continuous roster in the entire league while being the best team in the league. Since 2019, the average roster continuity among championship teams, essentially how much a team stayed the same from one season to the next, was about 61%.
+```
 
 ---
 
