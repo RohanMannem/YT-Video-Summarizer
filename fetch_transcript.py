@@ -1,18 +1,12 @@
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api.proxies import WebshareProxyConfig
+from youtube_transcript_api._api import _TranscriptApi
+from youtube_transcript_api._errors import YouTubeRequestFailed
+import requests
+import time
+from proxy_manager import get_random_proxy
 
-def fetch_transcript(video_id, streamlit=False, proxy_username=None, proxy_password=None):
-    if streamlit:
-        ytt_api = YouTubeTranscriptApi(
-            proxy_config=WebshareProxyConfig(
-                proxy_username=proxy_username,
-                proxy_password=proxy_password,
-            )
-        )
-    else:
-        ytt_api = YouTubeTranscriptApi()
-    print(f"Username: {repr(proxy_username)}")
-    print(f"Password: {repr(proxy_password)}")
+def fetch_transcript(video_id):
+    ytt_api = YouTubeTranscriptApi()
     fetched_transcript = ytt_api.fetch(video_id)
 
     captions = []
@@ -28,3 +22,32 @@ def fetch_transcript(video_id, streamlit=False, proxy_username=None, proxy_passw
 
     caption = ' '.join(captions)
     return caption
+
+def proxy_fetch_transcript(video_id, max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            proxy_url = get_random_proxy()
+
+            print(f"🔁 Attempt {attempt+1} using proxy: {proxy_url}")
+
+            # Set up a proxy session
+            session = requests.Session()
+            session.proxies = {
+                "http": proxy_url,
+                "https": proxy_url,
+            }
+
+            # Fetch transcript with custom session
+            transcript = _TranscriptApi._get_transcript(video_id, session=session)
+            return transcript
+
+        except YouTubeRequestFailed as e:
+            print(f"Proxy failed (attempt {attempt+1}): {e}")
+            time.sleep(2)  # small backoff
+            continue
+        except Exception as e:
+            print(f"Unexpected error (attempt {attempt+1}): {e}")
+            time.sleep(2)
+            continue
+
+    raise Exception("All proxy attempts failed to fetch the transcript.")
