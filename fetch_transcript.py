@@ -1,9 +1,10 @@
 from youtube_transcript_api import YouTubeTranscriptApi
-from youtube_transcript_api._api import _TranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig
 from youtube_transcript_api._errors import YouTubeRequestFailed
 import requests
 import time
-from proxy_manager import get_random_proxy
+from proxy_manager import get_random_proxy, get_proxy_pool
+import streamlit as st
 
 def fetch_transcript(video_id):
     ytt_api = YouTubeTranscriptApi()
@@ -24,30 +25,37 @@ def fetch_transcript(video_id):
     return caption
 
 def proxy_fetch_transcript(video_id, max_retries=3):
+    proxy_user = st["WEBSHARE_PROXY_USERNAME"]
+    proxy_pass = st["WEBSHARE_PROXY_PASSWORD"]
+
     for attempt in range(max_retries):
+        proxy = get_random_proxy()
+        proxy_url = get_random_proxy()
+        host, port = proxy.replace("http://", "").split("@")[-1].split(":")
+
         try:
-            proxy_url = get_random_proxy()
+            print(f"Attempt {attempt+1} with proxy {proxy}")
 
-            print(f"🔁 Attempt {attempt+1} using proxy: {proxy_url}")
+            ytt_api = YouTubeTranscriptApi(
+                proxy_config=WebshareProxyConfig(
+                    proxy_host=host,
+                    proxy_port=int(port),
+                    proxy_username=proxy_user,
+                    proxy_password=proxy_pass,
+                )
+            )
+            fetched_transcript = ytt_api.fetch(video_id)
 
-            # Set up a proxy session
-            session = requests.Session()
-            session.proxies = {
-                "http": proxy_url,
-                "https": proxy_url,
-            }
+            captions = []
 
-            # Fetch transcript with custom session
-            transcript = _TranscriptApi._get_transcript(video_id, session=session)
-            return transcript
+            for snippet in fetched_transcript:
+                captions.append(snippet.text)
 
-        except YouTubeRequestFailed as e:
-            print(f"Proxy failed (attempt {attempt+1}): {e}")
-            time.sleep(2)  # small backoff
-            continue
+            caption = ' '.join(captions)
+            return caption
+        
         except Exception as e:
-            print(f"Unexpected error (attempt {attempt+1}): {e}")
+            print(f"Proxy failed (attempt {attempt+1}): {e}")
             time.sleep(2)
-            continue
 
     raise Exception("All proxy attempts failed to fetch the transcript.")
