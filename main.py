@@ -1,4 +1,4 @@
-from youtube_transcript_api import YouTubeTranscriptApi
+from fetch_transcript import fetch_transcript
 import argparse
 
 parser = argparse.ArgumentParser(description="YouTube Transcript Summarizer")
@@ -15,24 +15,8 @@ parser.add_argument(
 )
 
 args = parser.parse_args()
-video_id = args.video_id
-# video_id = 'spmBNxDA3HY'
-
-ytt_api = YouTubeTranscriptApi()
-fetched_transcript = ytt_api.fetch(video_id)
-
-captions = []
-
-for snippet in fetched_transcript:
-    captions.append(snippet.text)
-
-# indexable
-last_snippet = fetched_transcript[-1]
-
-# provides a length
-snippet_count = len(fetched_transcript)
-
-caption = ' '.join(captions)
+video_id = args.video_id # video_id = 'spmBNxDA3HY'
+caption = fetch_transcript(video_id)
 
 if args.use_gpt:
     from openai_summarizer import openai_summarizer

@@ -1,8 +1,7 @@
-# Re-run after code environment was reset to regenerate the Streamlit app file
-
-streamlit_code = """
 import streamlit as st
-from summarizer import get_transcript, summarize_with_nltk, summarize_with_spacy, summarize_with_gpt
+from fetch_transcript import fetch_transcript
+from basic_summarizer import basic_summarizer
+from openai_summarizer import openai_summarizer
 
 st.set_page_config(page_title="🎥 YouTube Video Summarizer", layout="centered")
 
@@ -42,11 +41,3 @@ if st.button("Summarize") and video_id:
             }
             gpt_summary = summarize_with_gpt(prompt_styles[gpt_style])
             st.markdown(gpt_summary)
-"""
-
-# Save to file
-streamlit_file_path = "streamlit/app.py"
-with open(streamlit_file_path, "w") as f:
-    f.write(streamlit_code.strip())
-
-streamlit_file_path
