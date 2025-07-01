@@ -32,7 +32,9 @@ def proxy_fetch_transcript(video_id, max_retries=3):
         proxy = get_random_proxy()
         print("PROXY", proxy)
         print("PROXY", proxy.replace("http://", "").split("@")[-1].split(":"))
-        host, port = proxy.replace("http://", "").split("@")[-1].split(":")
+        proxy = proxy.replace("http://", "").split("@")[-1].split(":")
+        host = proxy[0]
+        port = proxy[1]
 
         try:
             print(f"Attempt {attempt+1} with proxy {proxy}")
