@@ -30,7 +30,8 @@ def proxy_fetch_transcript(video_id, max_retries=3):
 
     for attempt in range(max_retries):
         proxy = get_random_proxy()
-        proxy_url = get_random_proxy()
+        print("PROXY", proxy)
+        print("PROXY", proxy.replace("http://", "").split("@")[-1].split(":"))
         host, port = proxy.replace("http://", "").split("@")[-1].split(":")
 
         try:

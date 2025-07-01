@@ -1,6 +1,5 @@
 import requests
 import random
-import os
 import streamlit as st
 
 WEBSHARE_PROXY_LIST_URL = st.secrets["WEBSHARE_PROXY_LIST_URL"]
