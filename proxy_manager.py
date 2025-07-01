@@ -3,7 +3,7 @@ import random
 import os
 import streamlit as st
 
-WEBSHARE_PROXY_LIST_URL = st["WEBSHARE_PROXY_LIST_URL"]
+WEBSHARE_PROXY_LIST_URL = st.secrets["WEBSHARE_PROXY_LIST_URL"]
 
 def get_proxy_pool():
     try:

@@ -25,8 +25,8 @@ def fetch_transcript(video_id):
     return caption
 
 def proxy_fetch_transcript(video_id, max_retries=3):
-    proxy_user = st["WEBSHARE_PROXY_USERNAME"]
-    proxy_pass = st["WEBSHARE_PROXY_PASSWORD"]
+    proxy_user = st.secrets["WEBSHARE_PROXY_USERNAME"]
+    proxy_pass = st.secrets["WEBSHARE_PROXY_PASSWORD"]
 
     for attempt in range(max_retries):
         proxy = get_random_proxy()
