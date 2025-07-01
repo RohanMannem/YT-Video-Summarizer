@@ -4,6 +4,7 @@ from basic_summarizer import spacy_summarizer
 from basic_summarizer import nltk_summarizer
 from openai_summarizer import openai_summarizer
 from urllib.parse import urlparse, parse_qs
+import openai
 
 st.set_page_config(page_title="🎥 YouTube Video Summarizer", layout="centered")
 
@@ -36,6 +37,8 @@ if st.button("Summarize") and video_id:
         # st.text(transcript[:1000] + "..." if len(transcript) > 1000 else transcript)
 
         if use_gpt:
+            openai.api_key = st.secrets["OPENAI_API_KEY"]
+
             st.subheader("🤖 GPT-4o Summary")
             prompt_styles = {
                 "Default": f"Summarize this YouTube transcript:\\n\\n{transcript}",

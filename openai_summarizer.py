@@ -16,7 +16,7 @@ def openai_summarizer(transcript_text, model="gpt-4o"):
         "content": f"Summarize the following transcript in 5-7 bullet points:\n\n{transcript_text}"
     }
 
-    client = OpenAI()
+    client = OpenAI(api_key=api_key)
 
     response = client.chat.completions.create(
         model=model,
