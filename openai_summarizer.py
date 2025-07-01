@@ -1,8 +1,6 @@
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
-from youtube_transcript_api import YouTubeTranscriptApi
-import argparse
 
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")

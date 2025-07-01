@@ -1,7 +1,22 @@
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api.proxies import WebshareProxyConfig
+from dotenv import load_dotenv
+import os
 
-def fetch_transcript(video_id):
-    ytt_api = YouTubeTranscriptApi()
+load_dotenv()
+proxy_username = os.getenv("WEBSHARE_PROXY_USERNAME")
+proxy_password = os.getenv("WEBSHARE_PROXY_PASSWORD")
+
+def fetch_transcript(video_id, streamlit=False):
+    if streamlit:
+        ytt_api = YouTubeTranscriptApi(
+            proxy_config=WebshareProxyConfig(
+                proxy_username=proxy_username,
+                proxy_password=proxy_username,
+            )
+        )
+    else:
+        ytt_api = YouTubeTranscriptApi()
     fetched_transcript = ytt_api.fetch(video_id)
 
     captions = []

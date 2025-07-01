@@ -27,7 +27,7 @@ gpt_style = st.selectbox("GPT Summary Style", ["Default", "Bullets", "Explain Li
 
 if st.button("Summarize") and video_id:
     with st.spinner("Fetching transcript..."):
-        transcript = fetch_transcript(video_id)
+        transcript = fetch_transcript(video_id, streamlit=True)
 
     if not transcript:
         st.error("❌ Could not fetch transcript. Check if the video has captions.")
