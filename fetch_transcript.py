@@ -17,6 +17,8 @@ def fetch_transcript(video_id, streamlit=False):
         )
     else:
         ytt_api = YouTubeTranscriptApi()
+    print(f"Username: {repr(proxy_username)}")
+    print(f"Password: {repr(proxy_password)}")
     fetched_transcript = ytt_api.fetch(video_id)
 
     captions = []
