@@ -1,6 +1,7 @@
 import streamlit as st
 from fetch_transcript import fetch_transcript
-from basic_summarizer import basic_summarizer
+from basic_summarizer import spacy_summarizer
+from basic_summarizer import nltk_summarizer
 from openai_summarizer import openai_summarizer
 
 st.set_page_config(page_title="🎥 YouTube Video Summarizer", layout="centered")
@@ -15,7 +16,7 @@ gpt_style = st.selectbox("GPT Summary Style", ["Default", "Bullets", "Explain Li
 
 if st.button("Summarize") and video_id:
     with st.spinner("Fetching transcript..."):
-        transcript = get_transcript(video_id)
+        transcript = fetch_transcript(video_id)
 
     if not transcript:
         st.error("❌ Could not fetch transcript. Check if the video has captions.")
@@ -24,11 +25,11 @@ if st.button("Summarize") and video_id:
         st.text(transcript[:1000] + "..." if len(transcript) > 1000 else transcript)
 
         st.subheader("🧠 spaCy Summary")
-        spacy_summary = summarize_with_spacy(transcript)
+        spacy_summary = spacy_summarizer(transcript)
         st.markdown(spacy_summary)
 
         st.subheader("🧪 NLTK Summary")
-        nltk_summary = summarize_with_nltk(transcript)
+        nltk_summary = nltk_summarizer(transcript)
         st.markdown(nltk_summary)
 
         if use_gpt:
@@ -39,5 +40,5 @@ if st.button("Summarize") and video_id:
                 "Explain Like I'm 5": f"Explain this video simply, like I'm 5 years old:\\n\\n{transcript}",
                 "Short Paragraph": f"Summarize this transcript in 1 short paragraph:\\n\\n{transcript}",
             }
-            gpt_summary = summarize_with_gpt(prompt_styles[gpt_style])
+            gpt_summary = openai_summarizer(prompt_styles[gpt_style])
             st.markdown(gpt_summary)

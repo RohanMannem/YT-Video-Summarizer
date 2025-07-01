@@ -10,7 +10,7 @@ from string import punctuation
 from heapq import nlargest
 
 
-def basic_summarizer(caption):
+def spacy_summarizer(caption):
     nlp = spacy.blank("en")
     if "sentencizer" not in nlp.pipe_names:
         nlp.add_pipe("sentencizer")
@@ -29,8 +29,10 @@ def basic_summarizer(caption):
     summary = " ".join(sent.text for sent in sorted_sentences[:3])
     print("spaCy")
     print(summary)
+    return summary
 
 
+def nltk_summarizer(caption):
     # Tokenize the text into sentences
     sentences = sent_tokenize(caption)
 
@@ -65,3 +67,4 @@ def basic_summarizer(caption):
     print()
     print("NLTK")
     print(summary)
+    return summary
