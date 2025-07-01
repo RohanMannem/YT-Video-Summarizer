@@ -1,13 +1,7 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.proxies import WebshareProxyConfig
-from dotenv import load_dotenv
-import os
 
-load_dotenv()
-proxy_username = os.getenv("WEBSHARE_PROXY_USERNAME")
-proxy_password = os.getenv("WEBSHARE_PROXY_PASSWORD")
-
-def fetch_transcript(video_id, streamlit=False):
+def fetch_transcript(video_id, streamlit=False, proxy_username=None, proxy_password=None):
     if streamlit:
         ytt_api = YouTubeTranscriptApi(
             proxy_config=WebshareProxyConfig(
