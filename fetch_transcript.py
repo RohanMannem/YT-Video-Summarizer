@@ -1,9 +1,7 @@
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.proxies import WebshareProxyConfig
-from youtube_transcript_api._errors import YouTubeRequestFailed
-import requests
 import time
-from proxy_manager import get_random_proxy, get_proxy_pool
+from proxy_manager import get_random_proxy
 import streamlit as st
 
 def fetch_transcript(video_id):
@@ -41,8 +39,8 @@ def proxy_fetch_transcript(video_id, max_retries=3):
 
             ytt_api = YouTubeTranscriptApi(
                 proxy_config=WebshareProxyConfig(
-                    proxy_host=host,
-                    proxy_port=int(port),
+                    # proxy_host=host,
+                    # proxy_port=int(port),
                     proxy_username=proxy_user,
                     proxy_password=proxy_pass,
                 )
