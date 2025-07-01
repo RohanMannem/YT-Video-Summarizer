@@ -60,3 +60,27 @@ def proxy_fetch_transcript(video_id, max_retries=3):
             time.sleep(2)
 
     raise Exception("All proxy attempts failed to fetch the transcript.")
+
+def fetch_transcript_yt_dlp(video_id):
+    import yt_dlp
+    import pysrt
+
+    ydl_opts = {
+        "skip_download": True,
+        "writesubtitles": True,
+        "writeautomaticsub": True,
+        "subtitleslangs": "en",
+        "subtitlesformat": "srt",
+        "outtmpl": "%(id)s.%(ext)s",
+    }
+
+    with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+        info = ydl.extract_info(video_url, download=True)
+        video_id = info["id"]
+        srt_file = f"{video_id}.en.srt"
+
+    # Read subtitles using pysrt
+    subs = pysrt.open(srt_file)
+    full_text = " ".join([sub.text for sub in subs])
+    print(full_text)
+    return full_text
