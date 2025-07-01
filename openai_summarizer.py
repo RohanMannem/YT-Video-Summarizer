@@ -7,39 +7,7 @@ import argparse
 load_dotenv()
 api_key = os.getenv("OPENAI_API_KEY")
 
-parser = argparse.ArgumentParser(description="YouTube Transcript Summarizer")
-parser.add_argument(
-    "--video_id",
-    type=str,
-    required=True,
-    help="YouTube video ID (e.g., dQw4w9WgXcQ)"
-)
-
-args = parser.parse_args()
-video_id = args.video_id
-# video_id = 'spmBNxDA3HY'
-
-ytt_api = YouTubeTranscriptApi()
-fetched_transcript = ytt_api.fetch(video_id)
-
-captions = []
-
-for snippet in fetched_transcript:
-    # print(snippet.text)
-    captions.append(snippet.text)
-
-# indexable
-last_snippet = fetched_transcript[-1]
-
-# provides a length
-snippet_count = len(fetched_transcript)
-
-# print(last_snippet)
-# print(snippet_count)
-
-caption = ' '.join(captions)
-
-def summarize_with_gpt(transcript_text, model="gpt-4o"):
+def openai_summarizer(transcript_text, model="gpt-4o"):
     system_msg = {
         "role": "developer",
         "content": "You are a helpful assistant that summarizes YouTube transcripts clearly and concisely."
@@ -62,8 +30,6 @@ def summarize_with_gpt(transcript_text, model="gpt-4o"):
     summary = response.choices[0].message.content.strip()
     print(summary)
     return summary
-
-summarize_with_gpt(caption)
 
 # video_id = spmBNxDA3HY
 
