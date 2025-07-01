@@ -3,6 +3,7 @@ from fetch_transcript import fetch_transcript
 from basic_summarizer import spacy_summarizer
 from basic_summarizer import nltk_summarizer
 from openai_summarizer import openai_summarizer
+from urllib.parse import urlparse, parse_qs
 
 st.set_page_config(page_title="🎥 YouTube Video Summarizer", layout="centered")
 
