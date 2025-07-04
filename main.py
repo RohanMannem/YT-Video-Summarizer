@@ -1,6 +1,7 @@
 from fetch_transcript import fetch_transcript
 import argparse
 from urllib.parse import urlparse, parse_qs
+from chunker import chunk_transcript
 
 def extract_video_id(youtube_url):
   """Extracts the YouTube video ID from a standard watch URL."""
@@ -27,11 +28,15 @@ args = parser.parse_args()
 video_id = extract_video_id(args.video_link) # video_link= https://www.youtube.com/watch?v=spmBNxDA3HY
 caption = fetch_transcript(video_id)
 
-if args.use_gpt:
-    from openai_summarizer import openai_summarizer
-    openai_summarizer(caption)
-else:
-    from basic_summarizer import spacy_summarizer
-    from basic_summarizer import nltk_summarizer
-    spacy_summarizer(caption)
-    nltk_summarizer(caption)
+chunks = chunk_transcript(caption, max_tokens=500, overlap=100)
+print(f"Generated {len(chunks)} chunks")
+print(chunks[0][:500])
+
+# if args.use_gpt:
+#     from openai_summarizer import openai_summarizer
+#     openai_summarizer(caption)
+# else:
+#     from basic_summarizer import spacy_summarizer
+#     from basic_summarizer import nltk_summarizer
+#     spacy_summarizer(caption)
+#     nltk_summarizer(caption)
