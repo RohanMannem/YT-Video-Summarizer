@@ -3,58 +3,42 @@ import spacy
 nlp = spacy.load("en_core_web_sm")
 
 def chunk_transcript(text, max_tokens=500, overlap=100):
-    """
-    Splits transcript into overlapping chunks using spaCy sentence boundaries.
-
-    Args:
-        text (str): The full transcript.
-        max_tokens (int): Max tokens per chunk.
-        overlap (int): Number of tokens to overlap between chunks.
-
-    Returns:
-        List of strings (each chunk).
-    """
     doc = nlp(text)
     sentences = [sent.text.strip() for sent in doc.sents if sent.text.strip()]
 
     chunks = []
-    current_chunk = []
-    current_len = 0
-
-    print(text)
-
-    print()
-    print(sentences)
-
     i = 0
+
     while i < len(sentences):
-        print(f"Chunking sentence {i}/{len(sentences)}")
-        print(sentences[i])
+        current_chunk = []
+        current_len = 0
+        start_i = i  # Save starting index
+
+        # Build a chunk up to max_tokens
         while i < len(sentences) and current_len < max_tokens:
+            print(i, len(sentences))
+            print(current_len, max_tokens)
             sentence = sentences[i]
-            sent_len = len(nlp(sentence))  # Count tokens via spaCy
+            sent_len = len(nlp(sentence))
+            if current_len + sent_len > max_tokens:
+                break
             current_chunk.append(sentence)
             current_len += sent_len
             i += 1
 
         chunks.append(" ".join(current_chunk))
+        print(current_chunk)
 
-        print("ESCAPE")
+        if i >= len(sentences):  # End of transcript
+            break
 
-        # Roll back index for overlap
-        if overlap > 0:
-            overlap_tokens = 0
-            j = i - 1
-            current_chunk = []
-            while j >= 0 and overlap_tokens < overlap:
-                sentence = sentences[j]
-                sent_len = len(nlp(sentence))
-                current_chunk.insert(0, sentence)
-                overlap_tokens += sent_len
-                j -= 1
-        else:
-            current_chunk = []
-
-        current_len = sum(len(nlp(sent)) for sent in current_chunk)
+        # Backtrack to create overlap
+        overlap_tokens = 0
+        j = i - 1
+        while j >= 0 and overlap_tokens < overlap:
+            sentence = sentences[j]
+            overlap_tokens += len(nlp(sentence))
+            j -= 1
+        i = j + 1  # Set i to where the overlap starts
 
     return chunks
