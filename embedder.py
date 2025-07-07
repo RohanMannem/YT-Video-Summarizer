@@ -2,8 +2,11 @@ import openai
 import os
 import time
 import tiktoken
+from dotenv import load_dotenv
+
 
 # Set your OpenAI API key (handle secrets elsewhere in production)
+load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 EMBED_MODEL = "text-embedding-3-small"  # or "text-embedding-3-large"

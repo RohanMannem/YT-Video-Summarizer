@@ -2,6 +2,7 @@ from fetch_transcript import fetch_transcript
 import argparse
 from urllib.parse import urlparse, parse_qs
 from chunker import chunk_transcript
+from embedder import embed_texts
 
 def extract_video_id(youtube_url):
   """Extracts the YouTube video ID from a standard watch URL."""
@@ -31,6 +32,10 @@ caption = fetch_transcript(video_id)
 chunks = chunk_transcript(caption, max_tokens=500, overlap=100)
 print(f"Generated {len(chunks)} chunks")
 print(chunks[0][:500])
+
+embedded_chunks = embed_texts(chunks)
+print(f"Embedded {len(embedded_chunks)} chunks")
+print(embedded_chunks[0]["embedding"][:5])  # Preview embedding
 
 # if args.use_gpt:
 #     from openai_summarizer import openai_summarizer
