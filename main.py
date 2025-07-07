@@ -3,6 +3,7 @@ import argparse
 from urllib.parse import urlparse, parse_qs
 from chunker import chunk_transcript
 from embedder import embed_texts
+from vector_store import VectorStore
 
 def extract_video_id(youtube_url):
   """Extracts the YouTube video ID from a standard watch URL."""
@@ -36,6 +37,20 @@ print(chunks[0][:500])
 embedded_chunks = embed_texts(chunks)
 print(f"Embedded {len(embedded_chunks)} chunks")
 print(embedded_chunks[0]["embedding"][:5])  # Preview embedding
+
+vector_dim = len(embedded_chunks[0]["embedding"])
+store = VectorStore(dim=vector_dim)
+
+# Step 3: Add embeddings
+store.add_embeddings(embedded_chunks)
+
+# Step 4: Search with a user question
+query = "How old is the roster?"
+results = store.search(query, top_k=3)
+
+# Preview result
+for r in results:
+    print(f"[Score: {r['score']:.2f}] {r['text']}...")
 
 # if args.use_gpt:
 #     from openai_summarizer import openai_summarizer
