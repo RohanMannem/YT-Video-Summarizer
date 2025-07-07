@@ -1,9 +1,7 @@
 nltk==3.9.1
-openai==1.93.0
-pysrt==1.1.2
+openai==1.93.1
 python-dotenv==1.1.1
-Requests==2.32.4
 spacy==3.8.7
 streamlit==1.46.1
-youtube_transcript_api==1.1.0
-yt_dlp==2025.6.30
+tiktoken==0.9.0
+youtube_transcript_api==1.1.1
