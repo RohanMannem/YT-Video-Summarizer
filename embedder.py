@@ -31,12 +31,16 @@ def embed_texts(texts, model=EMBED_MODEL, batch_size=10, delay=1):
     """
     results = []
     for i in range(0, len(texts), batch_size):
-        batch = texts[i:i+batch_size]
+        batch_chunks = texts[i:i+batch_size]
+        texts = [chunk["text"] for chunk in batch_chunks]
         try:
-            response = openai.embeddings.create(input=batch, model=model)
+            response = openai.embeddings.create(input=texts, model=model)
             for j, record in enumerate(response.data):
+                chunk = batch_chunks[j]
                 results.append({
-                    "text": batch[j],
+                    "text": chunk["text"],
+                    "start_time": chunk["start_time"],
+                    "sentences": chunk.get("sentences", []),
                     "embedding": record.embedding,
                     "chunk_id": i + j
                 })

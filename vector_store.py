@@ -21,7 +21,13 @@ class VectorStore:
         Adds a list of embedded chunks to the index.
 
         Each element in embedded_chunks must be:
-        {"embedding": [...], "text": ..., "chunk_id": ...}
+        {
+            "embedding": [...],
+            "text": ...,
+            "start_time": ...,
+            "sentences": [...],
+            "chunk_id": ...
+        }
         """
         vectors = np.array([ec["embedding"] for ec in embedded_chunks]).astype("float32")
         self.index.add(vectors)
@@ -29,10 +35,16 @@ class VectorStore:
 
     def search(self, query_text, top_k=5, model="text-embedding-3-small"):
         """
-        Embeds the query text, searches the index, returns top_k results.
+        Embeds the query text, searches the index, and returns top_k matches.
 
         Returns:
-            List of dicts: [{"text": ..., "score": ..., "chunk_id": ...}]
+            List of dicts: [{
+                "text": ...,
+                "chunk_id": ...,
+                "start_time": ...,
+                "score": ...,
+                "sentences": [...]
+            }]
         """
         query_embedding = openai.embeddings.create(input=[query_text], model=model).data[0].embedding
         query_vec = np.array(query_embedding).reshape(1, -1).astype("float32")
@@ -46,6 +58,8 @@ class VectorStore:
                 results.append({
                     "text": meta["text"],
                     "chunk_id": meta["chunk_id"],
+                    "start_time": meta.get("start_time", ""),
+                    "sentences": meta.get("sentences", []),
                     "score": float(dist)
                 })
         return results
