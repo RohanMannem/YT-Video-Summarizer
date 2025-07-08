@@ -37,7 +37,7 @@ caption = fetch_timestamped_sentences(video_id)
 # print(f"Generated {len(chunks)} chunks")
 # print(chunks[0][:500])
 
-chunks_timestamped = chunk_timestamped_transcript(caption, max_tokens=10, overlap=20)
+chunks_timestamped = chunk_timestamped_transcript(caption, max_tokens=350, overlap=70)
 print(f"Generated {len(chunks_timestamped)} chunks")
 # print(chunks_timestamped[0])
 
@@ -52,7 +52,7 @@ store = VectorStore(dim=vector_dim)
 store.add_embeddings(embedded_chunks)
 
 # Step 4: Search with a user question
-query = "How old is the team?"
+query = "What team is this video talking about?"
 results = store.search(query, top_k=3)
 
 def best_sentence_match(query, sentences):

@@ -52,21 +52,7 @@ def chunk_timestamped_transcript(captions, max_tokens=50, overlap=20):
                     "text": sent.text.strip(),
                     "start_time": caption["start_time"]  # Use caption's start_time
                 })
-    # print(sentences[0])
-    for s in sentences:
-        for k, v in s.items():
-            print(s[k],len(s[k]))
-    print("GAP")
-    sentences = []
-    for caption in captions:
-        sentences.append({
-            "text": caption["text"].strip(),
-            "start_time": caption["start_time"]
-        })
-    # print(sentences[0])
-    for s in sentences:
-        for k, v in s.items():
-            print(len(s[k]))
+
     chunks = []
     i = 0
 
