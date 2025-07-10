@@ -29,19 +29,19 @@ parser.add_argument(
 
 args = parser.parse_args()
 video_id = extract_video_id(args.video_link) # video_link= https://www.youtube.com/watch?v=spmBNxDA3HY
-# caption = fetch_transcript(video_id)
-caption = fetch_timestamped_sentences(video_id)
+caption = fetch_transcript(video_id)
+# caption = fetch_timestamped_sentences(video_id)
 # print(caption)
 
-# chunks = chunk_transcript(caption, max_tokens=500, overlap=100)
-# print(f"Generated {len(chunks)} chunks")
+chunks = chunk_transcript(caption, max_tokens=500, overlap=100)
+print(f"Generated {len(chunks)} chunks")
 # print(chunks[0][:500])
 
-chunks_timestamped = chunk_timestamped_transcript(caption, max_tokens=350, overlap=70)
-print(f"Generated {len(chunks_timestamped)} chunks")
-# print(chunks_timestamped[0])
+# chunks_timestamped = chunk_timestamped_transcript(caption, max_tokens=350, overlap=70)
+# print(f"Generated {len(chunks_timestamped)} chunks")
+# # print(chunks_timestamped[0])
 
-embedded_chunks = embed_texts(chunks_timestamped)
+embedded_chunks = embed_texts(chunks)
 print(f"Embedded {len(embedded_chunks)} chunks")
 # print(embedded_chunks[0]["embedding"])  # Preview embedding
 
@@ -52,27 +52,12 @@ store = VectorStore(dim=vector_dim)
 store.add_embeddings(embedded_chunks)
 
 # Step 4: Search with a user question
-query = "What team is this video talking about?"
+query = "What do I need to learn machine learning?"
 results = store.search(query, top_k=3)
 
-def best_sentence_match(query, sentences):
-    best = None
-    best_score = 0
-    for s in sentences:
-        score = SequenceMatcher(None, query.lower(), s["text"].lower()).ratio()
-        if score > best_score:
-            best_score = score
-            best = s
-    return best, best_score
-
-# In your print loop
+# Preview result
 for r in results:
-    best_sentence, _ = best_sentence_match(query, r["sentences"])
-    print(f"[Score: {r['score']:.2f}] [{r['start_time']}]")
-    if best_sentence:
-        print(f"↳ {best_sentence['text']} (starts at {best_sentence['start_time']})\n")
-    else:
-        print(f"↳ No good sentence match found\n")
+    print(f"[Score: {r['score']:.2f}] {r['text'][:200]}...")
 
 # if args.use_gpt:
 #     from openai_summarizer import openai_summarizer
