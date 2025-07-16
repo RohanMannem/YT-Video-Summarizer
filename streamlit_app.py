@@ -1,8 +1,8 @@
 import streamlit as st
-from fetch_transcript import proxy_fetch_transcript
-from basic_summarizer import spacy_summarizer
-from basic_summarizer import nltk_summarizer
-from openai_summarizer import openai_summarizer
+from utils.fetch_transcript import proxy_fetch_transcript
+from summarizers.spacy_summarizer import spacy_summarizer
+from summarizers.nltk_summarizer import nltk_summarizer
+from summarizers.openai_summarizer import openai_summarizer
 from urllib.parse import urlparse, parse_qs
 import openai
 

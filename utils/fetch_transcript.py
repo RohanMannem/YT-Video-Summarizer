@@ -26,7 +26,6 @@ def proxy_fetch_transcript(video_id, max_retries=3):
     proxy_user = st.secrets["WEBSHARE_PROXY_USERNAME"]
     proxy_pass = st.secrets["WEBSHARE_PROXY_PASSWORD"]
 
-
     ytt_api = YouTubeTranscriptApi(
         proxy_config=WebshareProxyConfig(
             proxy_username=proxy_user,
