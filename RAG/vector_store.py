@@ -3,12 +3,13 @@ import numpy as np
 import openai
 import os
 from dotenv import load_dotenv
+import pickle
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class VectorStore:
-    def __init__(self, dim):
+    def __init__(self, dim=1536):
         """
         Args:
             dim (int): Dimension of the embeddings.
@@ -49,3 +50,20 @@ class VectorStore:
                     "score": float(dist)
                 })
         return results
+
+    def save(self, path):
+        os.makedirs(path, exist_ok=True)
+        faiss.write_index(self.index, os.path.join(path, "index.faiss"))
+
+        with open(os.path.join(path, "metadata.pkl"), "wb") as f:
+            pickle.dump(self.metadata, f)
+    
+    @staticmethod
+    def load(path, dim=1536):
+        store = VectorStore(dim)
+        store.index = faiss.read_index(os.path.join(path, "index.faiss"))
+
+        with open(os.path.join(path, "metadata.pkl"), "rb") as f:
+            store.metadata = pickle.load(f)
+
+        return store

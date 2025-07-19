@@ -1,22 +1,37 @@
-from chunker import chunk_transcript
-from embedder import embed_chunks
-from vector_store import VectorStore
-from ..utils.fetch_transcript import fetch_transcript
+from RAG.chunker import chunk_transcript
+from RAG.embedder import embed_texts
+from RAG.vector_store import VectorStore
+from utils.fetch_transcript import fetch_transcript
 
-# 1. Fetch full transcript text
-video_url = "https://www.youtube.com/watch?v=YOUR_VIDEO_ID"
-transcript = fetch_transcript(video_url)  # returns full transcript as string
+def build_store(video_id: str, store_path: str = "vector_store") -> VectorStore:
+    """
+    Builds and saves a vector store from a YouTube video transcript.
 
-# 2. Chunk the transcript
-chunks = chunk_transcript(transcript, max_tokens=500, overlap=100)
+    Args:
+        video_url (str): Full YouTube video URL
+        store_path (str): Folder to save the vector index and metadata
 
-# 3. Embed the chunks
-embedded_chunks = embed_chunks(chunks)  # returns [{"text": ..., "embedding": ...}, ...]
+    Returns:
+        VectorStore: An initialized and saved vector store
+    """
 
-# 4. Create and populate the vector store
-store = VectorStore()
-store.index(embedded_chunks)
+    # 1. Fetch transcript
+    transcript = fetch_transcript(video_id)
+    if not transcript:
+        raise ValueError("Failed to fetch transcript.")
 
-# 5. Save the vector store to disk
-store.save("vector_store")
-print("✅ Vector store saved!")
+    # 2. Chunk transcript
+    chunks = chunk_transcript(transcript)
+    if not chunks:
+        raise ValueError("Transcript was empty or poorly chunked.")
+
+    # 3. Embed chunks
+    embedded_chunks = embed_texts(chunks)
+
+    # 4. Build vector store
+    store = VectorStore()
+    store.add_embeddings(embedded_chunks)
+    store.save(store_path)
+
+    print(f"✅ Vector store saved to {store_path}")
+    return store

@@ -3,7 +3,7 @@ from utils.fetch_transcript import proxy_fetch_transcript
 from summarizers.spacy_summarizer import spacy_summarizer
 from summarizers.nltk_summarizer import nltk_summarizer
 from summarizers.openai_summarizer import openai_summarizer
-from urllib.parse import urlparse, parse_qs
+from utils.extract_video_id import extract_video_id
 import openai
 
 st.set_page_config(page_title="🎥 YouTube Video Summarizer", layout="centered")
@@ -13,14 +13,6 @@ st.markdown("Fetch a YouTube video transcript and generate summaries using spaCy
 
 video_link = st.text_input("Enter YouTube Video Link:")
 
-def extract_video_id(youtube_url):
-  """Extracts the YouTube video ID from a standard watch URL."""
-  parsed_url = urlparse(youtube_url)
-  if parsed_url.hostname == 'www.youtube.com' and parsed_url.path == '/watch':
-    query_params = parse_qs(parsed_url.query)
-    if 'v' in query_params:
-      return query_params['v'][0]
-  return None
 video_id = extract_video_id(video_link)
 
 use_gpt = st.checkbox("Use GPT-4o Summary", value=False)

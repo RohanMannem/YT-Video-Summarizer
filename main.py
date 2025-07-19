@@ -1,9 +1,9 @@
-from fetch_transcript import fetch_transcript, fetch_timestamped_sentences
+from utils.fetch_transcript import fetch_transcript, fetch_timestamped_sentences
 import argparse
 from urllib.parse import urlparse, parse_qs
-from chunker import chunk_transcript, chunk_timestamped_transcript
-from embedder import embed_texts
-from vector_store import VectorStore
+from RAG.chunker import chunk_transcript, chunk_timestamped_transcript
+from RAG.embedder import embed_texts
+from RAG.vector_store import VectorStore
 from difflib import SequenceMatcher
 
 def extract_video_id(youtube_url):
