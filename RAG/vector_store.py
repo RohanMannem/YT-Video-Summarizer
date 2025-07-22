@@ -4,18 +4,20 @@ import openai
 import os
 from dotenv import load_dotenv
 import pickle
+from RAG.embeddings.openai_embeddings import OpenAIEmbeddings
 
 load_dotenv()
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 class VectorStore:
-    def __init__(self, dim=1536):
+    def __init__(self, dim=1536, embeddings = None):
         """
         Args:
             dim (int): Dimension of the embeddings.
         """
         self.index = faiss.IndexFlatL2(dim)  # L2 = Euclidean distance
         self.metadata = []  # List of dicts storing info per vector
+        self.embeddings = embeddings or OpenAIEmbeddings()
 
     def add_embeddings(self, embedded_chunks):
         """
@@ -59,8 +61,8 @@ class VectorStore:
             pickle.dump(self.metadata, f)
     
     @staticmethod
-    def load_faiss_index(path, dim=1536):
-        store = VectorStore(dim)
+    def load_faiss_index(path, dim=1536, embeddings = None):
+        store = VectorStore(dim, embeddings)
         store.index = faiss.read_index(os.path.join(path, "index.faiss"))
 
         with open(os.path.join(path, "metadata.pkl"), "rb") as f:
