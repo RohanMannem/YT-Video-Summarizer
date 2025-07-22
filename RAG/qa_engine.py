@@ -1,42 +1,70 @@
-import openai
-import os
-from dotenv import load_dotenv
+import faiss
+import json
+import numpy as np
+from openai import OpenAI
+from sentence_transformers import SentenceTransformer
 
-load_dotenv()
-openai.api_key = os.getenv("OPENAI_API_KEY")
 
-def generate_answer(query, retrieved_chunks, model="gpt-4", max_tokens=300):
-    """
-    Uses GPT to generate an answer to the query using retrieved transcript chunks.
+class QASystem:
+    def __init__(self, index_path: str, metadata_path: str, openai_api_key: str):
+        self.index = faiss.read_index(index_path)
+        with open(metadata_path, "r") as f:
+            self.metadata = json.load(f)
 
-    Args:
-        query (str): The user’s question.
-        retrieved_chunks (list of dict): Each dict should have a 'text' field.
-        model (str): OpenAI model (e.g., gpt-3.5-turbo, gpt-4).
-        max_tokens (int): Max tokens for GPT output.
+        self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
+        self.client = OpenAI(api_key=openai_api_key)
 
-    Returns:
-        str: GPT-generated answer.
-    """
+    def embed_question(self, question: str) -> np.ndarray:
+        embedding = self.embedding_model.encode([question])[0]
+        return np.array([embedding], dtype=np.float32)
 
-    # Combine retrieved chunks into readable references
-    context = "\n\n".join(
-        f"[Snippet {i+1}]\n{chunk['text']}" for i, chunk in enumerate(retrieved_chunks)
+    def search_index(self, question_embedding: np.ndarray, top_k: int = 5):
+        D, I = self.index.search(question_embedding, top_k)
+        results = [self.metadata[str(idx)] for idx in I[0] if str(idx) in self.metadata]
+        return results
+
+    def build_prompt(self, question: str, context_chunks: list) -> str:
+        context = "\n\n".join([
+            f"[{chunk['start_time']}] {chunk['text']}"  # <-- timestamp-aware
+            # f"{chunk['text']}"  # <-- uncomment this instead if no timestamps available
+            for chunk in context_chunks
+        ])
+
+        prompt = f"""
+        You are an assistant that answers questions about YouTube videos using their transcript.
+
+        Context:
+        {context}
+
+        Question: {question}
+        Answer concisely and cite timestamps where relevant.
+        """
+        return prompt
+
+    def ask(self, question: str) -> str:
+        embedding = self.embed_question(question)
+        relevant_chunks = self.search_index(embedding)
+        prompt = self.build_prompt(question, relevant_chunks)
+
+        response = self.client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt}
+            ]
+        )
+
+        return response.choices[0].message.content
+
+
+if __name__ == "__main__":
+    qa = QASystem(
+        index_path="vector_store/faiss.index",
+        metadata_path="vector_store/metadata.json",
+        openai_api_key="your-openai-api-key"
     )
 
-    prompt = f"""You are a helpful assistant. Answer the user's question using only the information from the transcript snippets below.
-
-    {context}
-
-    Question: {query}
-
-    Answer:"""
-
-    response = openai.chat.completions.create(
-        model=model,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.3,
-        max_tokens=max_tokens
-    )
-
-    return response.choices[0].message.content.strip()
+    while True:
+        q = input("Ask a question: ")
+        print(qa.ask(q))
+        print("---")
