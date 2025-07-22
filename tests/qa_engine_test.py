@@ -3,7 +3,7 @@ import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-from ..RAG.qa_engine import answer_question
+from RAG.qa_engine import answer_question
 
 # Example test variables
 store_dir = "vector_store/_xIwjmCH6D4"

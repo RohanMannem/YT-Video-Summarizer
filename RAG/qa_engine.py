@@ -3,17 +3,19 @@ import sys
 import os
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from ..RAG.vector_store import load_faiss_index
+from RAG.vector_store import VectorStore
 from openai import OpenAI
 import json
-import os
+import pickle
 
 class QnAEngine:
     def __init__(self, store_dir, openai_client=None):
-        self.index, self.embeddings = load_faiss_index(store_dir)
-        metadata_path = os.path.join(store_dir, "metadata.json")
-        with open(metadata_path, "r") as f:
-            self.metadata = json.load(f)
+        store = VectorStore.load_faiss_index(store_dir)
+        self.index = store.index
+        self.embeddings = store.metadata
+        metadata_path = os.path.join("vector_store/_xIwjmCH6D4", "metadata.pkl")
+        with open(metadata_path, "rb") as f:
+            self.metadata = pickle.load(f)
 
         self.client = openai_client or OpenAI()
 

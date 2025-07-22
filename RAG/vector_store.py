@@ -59,7 +59,7 @@ class VectorStore:
             pickle.dump(self.metadata, f)
     
     @staticmethod
-    def load(path, dim=1536):
+    def load_faiss_index(path, dim=1536):
         store = VectorStore(dim)
         store.index = faiss.read_index(os.path.join(path, "index.faiss"))
 
