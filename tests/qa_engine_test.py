@@ -1,8 +1,13 @@
-from ..RAG.vector_store import VectorStore
-from ..RAG.qa_engine import generate_answer
+import sys
+import os
 
-query = "What was said about pricing?"
-results = store.search(query, top_k=5)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-answer = generate_answer(query, results)
-print(answer)
+from ..RAG.qa_engine import answer_question
+
+# Example test variables
+store_dir = "vector_store/_xIwjmCH6D4"
+question = "What is the main topic discussed in this video?"
+
+answer = answer_question(question, store_dir=store_dir)
+print("\nAnswer:\n", answer)

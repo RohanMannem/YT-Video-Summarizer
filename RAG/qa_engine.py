@@ -1,70 +1,55 @@
-import faiss
-import json
-import numpy as np
+# rag/qa_engine.py
+import sys
+import os
+
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from ..RAG.vector_store import load_faiss_index
 from openai import OpenAI
-from sentence_transformers import SentenceTransformer
+import json
+import os
 
-
-class QASystem:
-    def __init__(self, index_path: str, metadata_path: str, openai_api_key: str):
-        self.index = faiss.read_index(index_path)
+class QnAEngine:
+    def __init__(self, store_dir, openai_client=None):
+        self.index, self.embeddings = load_faiss_index(store_dir)
+        metadata_path = os.path.join(store_dir, "metadata.json")
         with open(metadata_path, "r") as f:
             self.metadata = json.load(f)
 
-        self.embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-        self.client = OpenAI(api_key=openai_api_key)
+        self.client = openai_client or OpenAI()
 
-    def embed_question(self, question: str) -> np.ndarray:
-        embedding = self.embedding_model.encode([question])[0]
-        return np.array([embedding], dtype=np.float32)
-
-    def search_index(self, question_embedding: np.ndarray, top_k: int = 5):
-        D, I = self.index.search(question_embedding, top_k)
-        results = [self.metadata[str(idx)] for idx in I[0] if str(idx) in self.metadata]
+    def query(self, question, top_k=5):
+        question_embedding = self.embeddings.embed_query(question)
+        D, I = self.index.search([question_embedding], top_k)
+        results = []
+        for i in I[0]:
+            if i < len(self.metadata):
+                results.append(self.metadata[i])
         return results
 
-    def build_prompt(self, question: str, context_chunks: list) -> str:
-        context = "\n\n".join([
-            f"[{chunk['start_time']}] {chunk['text']}"  # <-- timestamp-aware
-            # f"{chunk['text']}"  # <-- uncomment this instead if no timestamps available
+    def answer(self, question, top_k=5, include_timestamps=True):
+        context_chunks = self.query(question, top_k)
+        context_text = "\n\n".join(
+            f"[{chunk['start_time']:.2f}s] {chunk['text']}" if include_timestamps else chunk['text']
             for chunk in context_chunks
-        ])
+        )
 
-        prompt = f"""
-        You are an assistant that answers questions about YouTube videos using their transcript.
-
-        Context:
-        {context}
-
-        Question: {question}
-        Answer concisely and cite timestamps where relevant.
-        """
-        return prompt
-
-    def ask(self, question: str) -> str:
-        embedding = self.embed_question(question)
-        relevant_chunks = self.search_index(embedding)
-        prompt = self.build_prompt(question, relevant_chunks)
+        prompt = (
+            "Answer the following question based on the context below.\n\n"
+            f"Context:\n{context_text}\n\n"
+            f"Question: {question}\nAnswer:"
+        )
 
         response = self.client.chat.completions.create(
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},
                 {"role": "user", "content": prompt}
-            ]
+            ],
+            temperature=0.3,
         )
+        return response.choices[0].message.content.strip()
 
-        return response.choices[0].message.content
-
-
-if __name__ == "__main__":
-    qa = QASystem(
-        index_path="vector_store/faiss.index",
-        metadata_path="vector_store/metadata.json",
-        openai_api_key="your-openai-api-key"
-    )
-
-    while True:
-        q = input("Ask a question: ")
-        print(qa.ask(q))
-        print("---")
+# This is the callable function you can use from anywhere
+def answer_question(question, store_dir, top_k=5, include_timestamps=True):
+    engine = QnAEngine(store_dir)
+    return engine.answer(question, top_k=top_k, include_timestamps=include_timestamps)
