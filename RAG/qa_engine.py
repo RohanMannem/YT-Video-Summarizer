@@ -23,7 +23,7 @@ class QnAEngine:
         self.embedding_model = embedding_model
         self.metadata = store.metadata
 
-        metadata_path = os.path.join("vector_store/_xIwjmCH6D4", "metadata.pkl")
+        metadata_path = os.path.join(store_dir, "metadata.pkl")
         with open(metadata_path, "rb") as f:
             self.metadata = pickle.load(f)
 
