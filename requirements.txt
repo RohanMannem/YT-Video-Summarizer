@@ -1,4 +1,4 @@
-faiss==1.5.3
+# faiss==1.5.3
 nltk==3.9.1
 numpy==2.3.2
 openai==1.97.1
