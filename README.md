@@ -4,6 +4,8 @@ This project summarizes YouTube videos by fetching their transcripts and generat
 
 Compare their outputs side-by-side and understand how different NLP libraries handle text summarization.
 
+Demo: [streamlit-streamlit_app-2025-07-15-21-07-83.webm](https://github.com/user-attachments/assets/c0b4affd-adc3-4a59-b6a3-73922eacb340)
+
 ---
 
 ## ✨ Features
